@@ -4,7 +4,7 @@ I'm implementing a solution to the problem using the Rust language and the Rocke
 
 ## Installing Environment
 
-Install `brew`, then install `git` and `rust`.
+Using a user with administrative permissions, install [brew](https://brew.sh), `git`, and `rustup`.
 
 	$ /bin/bash -c "$(curl -fsSL https://raw.githubusercontent.com/Homebrew/install/HEAD/install.sh)"
 	$ brew install git
@@ -12,6 +12,10 @@ Install `brew`, then install `git` and `rust`.
 	$ rustup-init
 
 Choose (2) custom installation, change the channel to "nightly". There are some features used by Rocket that aren't available in the stable build of the rustc compiler. 
+
+Use `rustup` to install the nightly build of the rust compiler.
+
+	$ rustup toolchain install nightly
 
 ## Building the Code
 
