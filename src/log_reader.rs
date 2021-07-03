@@ -34,7 +34,7 @@ pub fn read_log(file_name : String, num_lines : u64, filter : Option<String> ) -
 	let mut r = "".to_string();
 	for line in lines.iter() {
 
-		r = r + line;
+		r = r + line + "\n";
 	}
 	
 	Ok(r)
