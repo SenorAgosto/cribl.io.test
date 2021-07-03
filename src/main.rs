@@ -6,6 +6,9 @@ use rocket::State;
 mod log_path;
 use log_path::LogPath;
 
+mod log_reader;
+use log_reader::read_log;
+
 #[get("/log/<log_name>/<num_lines>")]
 fn get_log(logs : State<LogPath>, log_name : String, num_lines : u64) -> String {
 	format!("log_path: {}, log_name: {}, num_lines: {}", logs.path, log_name, num_lines)
