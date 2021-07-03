@@ -1,5 +1,5 @@
-use std::fs::{File, OpenOptions};
-use std::io::{self, prelude::*, BufReader, Error, ErrorKind};
+use std::fs::File;
+use std::io::{self, prelude::*, BufReader};
 use std::result::Result;
 use circular_queue::CircularQueue;
 
@@ -19,13 +19,13 @@ pub fn read_log(file_name : String, num_lines : u64, filter : Option<String> ) -
 
 		let line = line_iter.unwrap();
 		
-		if(pattern.is_empty()) {
+		if pattern.is_empty() {
 
 			lines.push(line);
 
 		} else {
 
-			if(line.contains(&pattern)) {
+			if line.contains(&pattern) {
 				lines.push(line);
 			}	
 		}
