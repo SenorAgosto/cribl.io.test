@@ -38,3 +38,9 @@ You can request a log using the URL format:
     http://localhost:8000/log/<log_name>/<num_lines>
 
 Where `<log_name>` is the name of the log you want to retrieve and `<num_lines>` is the number of lines to get.
+
+You can request a log filtered by simple keywords using the URL format:
+
+    http://localhost:8000/filtered_log/<log_name>/<filter>/<num_lines>
+
+Where `<log_name>` is the name of the log you want to retrive, `<filter>` is the keyword to filter by, and `<num_lines>` is the number of lines to get.
