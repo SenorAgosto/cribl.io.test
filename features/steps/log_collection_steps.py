@@ -1,10 +1,6 @@
 import log_collection as log
 import requests
 
-def before_scenario(context, scenario):
-	print("performing setup")
-
-
 @given(u'log_collection is running')
 def cargo_run(context):
 	pass

@@ -1,3 +1,4 @@
+@fixture.start.log_collection
 Feature: log_collection http microservice
 
 	Scenario: retrieve 10 lines from weekly.out via log_collection microservice
