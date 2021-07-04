@@ -16,9 +16,9 @@ Use `rustup` to install the nightly build of the rust compiler.
 
 	$ rustup toolchain install nightly
 
-Use `pip3` to install `behave` BDD testing framework.
+Use `pip3` to install `behave` BDD testing framework and the 'requests' module.
 
-    $ pip3 install --user behave
+    $ pip3 install --user behave requests
 
 Add `behave` to your path, on macOS this is done by setting:
 
