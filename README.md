@@ -12,7 +12,7 @@ The log_collection service is implemented using Rust and the Rocket web api fram
 
 For the first bonus challenge, I would use [Cap'n Proto](https://capnproto) to define an RPC endpoint. The server and clients could be implemented in C++, C#, Erlang, Go, Haskell, JavaScript (Node.JS), OCaml, Python, or Rust.
 
-For the second bonus challeng, I would likely use a C# Windows Forms application to interact with the Cap'n Proto RPC service.
+For the second bonus challenge, I would likely use a C# Windows Forms application to interact with the Cap'n Proto RPC service.
 
 ## Environment & Dependencies
 
