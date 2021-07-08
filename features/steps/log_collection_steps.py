@@ -3,7 +3,7 @@ import requests
 
 @given(u'log_collection is running')
 def cargo_run(context):
-	pass
+	assert 'service' in context
 
 @given(u'expected result')
 def capture_expected_result(context):
