@@ -76,7 +76,7 @@ Use `rustup` to install the nightly build of the rust compiler.
 
 From the root of the project directory, use `cargo` to build the code:
 
-    $ cargo build
+    $ cargo build --release
 
 This will download and build all the external dependencies needed by Rocket.
 
@@ -84,7 +84,7 @@ This will download and build all the external dependencies needed by Rocket.
 
 From the root of the project directory, use `cargo` to run the microservice:
 
-    $ cargo run
+    $ cargo run --release
 
 The microservice should be listening on `http://localhost:8888`
 

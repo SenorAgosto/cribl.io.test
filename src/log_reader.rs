@@ -1,41 +1,54 @@
 use std::fs::File;
-use std::io::{self, prelude::*, BufReader};
 use std::result::Result;
-use circular_queue::CircularQueue;
+use memmap::MmapOptions;
 
-pub fn read_log(file_name : String, num_lines : u64, filter : Option<String> ) -> Result<String, io::Error> {
+mod capture_policy;
+use capture_policy::{CapturePolicy, FilteredCapture, UnfilteredCapture};
 
-	let mut lines = CircularQueue::<String>::with_capacity(num_lines as usize);
+fn read_log_with_capture_policy<L : CapturePolicy>(capture : &mut L, file_name : &String) -> Result<String, std::io::Error> {
 
-	let file = File::open(file_name)?;
-	let reader = BufReader::new(file);
+	let file = File::open(&file_name)?;
+	let mmap = unsafe { MmapOptions::new().map(&file)? };
 
-	let pattern = match filter {
-		Some(v) => v,
-		None => "".to_string(),
-	};
+	// TODO: handle the case the log is only 2 bytes
+	assert!(mmap.len() >= 2);
 
-	for line_iter in reader.lines() {
+	let mut prev_spot : usize = mmap.len() - 1;
+	let mut spot : usize = mmap.len() - 2; // skip the last char in the buffer in case it's '\n'
 
-		let line = line_iter.unwrap();
-		
-		if pattern.is_empty() {
+	while spot > 0 && capture.continue_capture() {
 
-			lines.push(line);
+		if mmap[spot] == b'\n' {
+			let line = &mmap[spot + 1..prev_spot];
 
-		} else {
-
-			if line.contains(&pattern) {
-				lines.push(line);
-			}	
+			capture.capture_line(line);
+			prev_spot = spot;
 		}
-	}
 
-	let mut r = "".to_string();
-	for line in lines.iter() {
-
-		r = r + line + "\n";
-	}
+		spot -= 1;
+	};
 	
-	Ok(r)
-} 
+	// grab the first line of the log if we haven't collect enough lines
+	if spot == 0 && capture.continue_capture() {
+
+		let line = &mmap[spot..prev_spot];
+		capture.capture_line(line);
+	}
+
+	let capacity = mmap.len() - spot + 1;
+	capture.collect_lines(capacity)
+}
+
+pub fn read_log(file_name : &String, num_lines : usize) -> Result<String, std::io::Error> {
+
+	let mut capture = UnfilteredCapture::with_capacity(num_lines);
+	read_log_with_capture_policy(&mut capture, &file_name)
+}
+
+pub fn read_log_with_filter(file_name : &String, filter : String, num_lines : usize) -> Result<String, std::io::Error> {
+
+	let f = filter.as_bytes();
+	let mut capture = FilteredCapture::with_capacity(&f, num_lines);
+	read_log_with_capture_policy(&mut capture, &file_name)
+}
+
