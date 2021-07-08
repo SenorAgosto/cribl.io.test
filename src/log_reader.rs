@@ -1,41 +1,77 @@
 use std::fs::File;
-use std::io::{self, prelude::*, BufReader};
+use std::io::{Error, ErrorKind};
 use std::result::Result;
-use circular_queue::CircularQueue;
+use memmap::MmapOptions;
 
-pub fn read_log(file_name : String, num_lines : u64, filter : Option<String> ) -> Result<String, io::Error> {
+fn line_from_mmap(slice : &[u8]) -> Result<String, std::io::Error> {
 
-	let mut lines = CircularQueue::<String>::with_capacity(num_lines as usize);
+	match std::str::from_utf8(slice).to_owned() {
+		Ok(v) => return Ok(v.to_string()),
+		Err(_e) => return Err(Error::new(ErrorKind::Other, "utf-8 conversion error")),
+	}
+}
+
+fn collect_lines(lines : &Vec::<String>, capacity : usize) -> Result<String, std::io::Error> {
+
+	let mut r = String::with_capacity(capacity);
+	for line in lines.iter() {
+
+		r += line;
+		r.push_str("\n");
+	} 
+
+	Ok(r)
+}
+
+pub fn read_log(file_name : String, num_lines : u64, filter : Option<String> ) -> Result<String, std::io::Error> {
+
+	let num_lines : usize = num_lines as usize;
+	let mut lines = Vec::<String>::with_capacity(num_lines as usize);
 
 	let file = File::open(file_name)?;
-	let reader = BufReader::new(file);
+	let mmap = unsafe { MmapOptions::new().map(&file)? };
 
 	let pattern = match filter {
 		Some(v) => v,
 		None => "".to_string(),
 	};
 
-	for line_iter in reader.lines() {
+	let mut collected_lines : usize = 0;
+	let mut prev_spot : usize = mmap.len() - 1;
+	let mut spot : usize = mmap.len() - 2; // skip the last character of the buffer in case it's '\n'
 
-		let line = line_iter.unwrap();
-		
+	while spot > 0 && collected_lines < num_lines {	
+
+		if mmap[spot] == b'\n' {
+
+			let line = line_from_mmap(&mmap[spot + 1..prev_spot])?;
+
+			if pattern.is_empty() {
+				lines.push(line.to_string()); 
+				collected_lines += 1;
+			} else if line.contains(&pattern) {
+				lines.push(line.to_string());
+				collected_lines += 1;
+			}
+
+			prev_spot = spot;
+		}
+
+		spot -= 1;
+	};
+
+	// grab the first line of the log if we haven't collect enough lines
+	if spot == 0 && collected_lines < num_lines {
+		let line = line_from_mmap(&mmap[spot..prev_spot])?;	
+
 		if pattern.is_empty() {
-
-			lines.push(line);
-
-		} else {
-
-			if line.contains(&pattern) {
-				lines.push(line);
-			}	
+			lines.push(line.to_string());
+		} else if line.contains(&pattern) {
+			lines.push(line.to_string());
+			
 		}
 	}
 
-	let mut r = "".to_string();
-	for line in lines.iter() {
-
-		r = r + line + "\n";
-	}
-	
-	Ok(r)
+	let capacity = mmap.len() - spot + 1;
+	collect_lines(&lines, capacity)
 } 
