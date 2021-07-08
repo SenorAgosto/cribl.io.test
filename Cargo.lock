@@ -369,6 +369,7 @@ name = "log_collection"
 version = "0.1.0"
 dependencies = [
  "memmap",
+ "needle",
  "rocket",
 ]
 
@@ -402,6 +403,12 @@ checksum = "ba626b8a6de5da682e1caa06bdb42a335aee5a84db8e5046a3e8ab17ba0a3ae0"
 dependencies = [
  "log 0.3.9",
 ]
+
+[[package]]
+name = "needle"
+version = "0.1.1"
+source = "registry+https://github.com/rust-lang/crates.io-index"
+checksum = "082da2123ad3ac77d4a67b5159cbf66509777e3c82248924b340d5b354bcca43"
 
 [[package]]
 name = "num_cpus"
