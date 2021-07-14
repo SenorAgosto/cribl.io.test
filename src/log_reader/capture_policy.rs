@@ -72,20 +72,6 @@ impl FilteredCapture<'_> {
 			pattern : BoyerMoore::new(&filter),
 			lines : Vec::<String>::with_capacity(capacity),
 		}
-
-		/*
-		let mut capture = FilteredCapture {
-			max_lines : capacity,
-			filter_str : Vec::<u8>::with_capacity(0),
-			pattern : BoyerMoore::new(b""),
-			lines : Vec::<String>::with_capacity(capacity),
-		};	
-
-		capture.filter_str.clone_from_slice(filter.as_bytes());
-		capture.pattern =  BoyerMoore::new(&capture.filter_str[..]);
-
-		return capture;	
-		*/
 	}
 
 	fn is_match(&self, line : &[u8]) -> bool {
